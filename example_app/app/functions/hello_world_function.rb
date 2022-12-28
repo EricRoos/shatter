@@ -1,0 +1,11 @@
+# frozen_string_literal: true
+
+class HelloWorldFunction < Shatter::Service::Function
+  define_param :name, nullable: false, type: "string"
+  define_param :number, nullable: false, type: "integer"
+
+  def invoke
+    params.to_h => name:, uuid:
+    { result: "Hello #{name}", error: nil, uuid: }
+  end
+end

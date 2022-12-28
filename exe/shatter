@@ -1,0 +1,59 @@
+#!/usr/bin/env ruby
+# frozen_string_literal: true
+
+require "shatter"
+require "thor"
+require "erb"
+require "fileutils"
+$stdout.sync = true
+
+def safe_makedir(path)
+  FileUtils.mkdir(path, noop: Dir.exist?(path), verbose: true)
+end
+
+class ShatterCLI < Thor
+  desc "init_service_discovery", "Sets up required keys for service discovery to work properly"
+
+  def init_service_discovery
+    zk = ZK.new(Shatter::Config.zookeeper_host)
+    zk.create("/shater_service_instances")
+    zk.create("/shatter::response_data_locations")
+    zk.close
+  end
+
+  desc "new APP_NAME", "scaffold a new shatter app"
+  def new(app_name)
+    puts "Generating new Shatter APP - #{app_name}"
+
+    puts "Updating Gemfile"
+    ::FileUtils.cp("#{__dir__}/../templates/Gemfile.template", "./Gemfile")
+    system("bundle install")
+
+    puts "Generating scripts"
+    FileUtils.mkdir("./bin", noop: Dir.exist?("./bin"))
+    FileUtils.cp("#{__dir__}/../bin/service", "./bin/service", verbose: true)
+    FileUtils.cp("#{__dir__}/../bin/server", "./bin/server", verbose: true)
+
+    puts "Generating boilerplate"
+
+    application_code = ERB.new(File.read("#{__dir__}/../templates/application.erb")).result(binding)
+    safe_makedir("./app")
+    File.write("./app/application.rb", application_code)
+
+    FileUtils.cp("#{__dir__}/../templates/config.ru", "./config.ru", verbose: true)
+    FileUtils.cp("#{__dir__}/../templates/docker-compose.yml.example", "./docker-compose.yml", verbose: true)
+
+
+    service_definition = ERB.new(File.read("#{__dir__}/../templates/service_definition.rb.erb")).result(binding)
+    File.write("./app/service_definition.rb", service_definition)
+
+    safe_makedir("./app/functions")
+    sample_function = ERB.new(File.read("#{__dir__}/../templates/hello_world_function.rb.erb")).result(binding)
+    File.write("./app/functions/hello_world_function.rb", sample_function)
+    safe_makedir("./config")
+
+    environment_config = ERB.new(File.read("#{__dir__}/../templates/environment.rb.erb")).result(binding)
+    File.write("./config/environment.rb", environment_config)
+  end
+end
+ShatterCLI.start(ARGV)

@@ -1,0 +1,16 @@
+{
+  "name": "shatter-client",
+  "version": "1.0.0",
+  "type": "module",
+  "main": "./dist/shatter.js",
+  "license": "MIT",
+  "dependencies": {
+    "rollup-plugin-typescript2": "^0.34.1"
+  },
+  "devDependencies": {
+    "@rollup/plugin-typescript": "^10.0.1",
+    "esbuild": "^0.16.13",
+    "rollup": "^3.9.1",
+    "typescript": "^4.9.4"
+  }
+}
