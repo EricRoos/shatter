@@ -13,3 +13,5 @@ gem "rubocop", "~> 1.21"
 
 gem "rack", "~> 3.0"
 gem "rackup", "~> 0.2.3"
+
+gem "concurrent-ruby", "~> 1.1"

@@ -1,49 +1,42 @@
 require 'securerandom'
 require 'json'
+require 'concurrent-ruby'
 class App
-  def operation_a
-    sleep 0.03
+  include Concurrent::Async
+
+  def operation_a(uuid)
+    {data: "data", uuid:}
   end
 end
-class StreamPool
+
+class ResponsePool
   include Singleton
   def initialize
-    @stream_pool = {}
-    @time_map = {}
+    @response_pool = {}
   end
 
-  def add_to_pool(stream, uuid=nil, delayed_access_time=0)
+  def add_to_pool(uuid=nil)
     uuid ||= SecureRandom.uuid
-    Thread.new do
-      App.new.operation_a
-      @stream_pool[uuid].reopen({uuid:}.to_json)
-      @stream_pool[uuid].close_write
-    end
-    @stream_pool[uuid] = stream
+    @response_pool[uuid] = nil
+    future = App.new.async.operation_a(uuid)
+    future.add_observer(self, :accept_data_for_uuid)
     uuid
   end
 
-  def write_to_stream(content, uuid)
-    @stream_pool[uuid].write(content)
-  end
-
-  def close_stream(uuid)
-    @stream_pool[uuid].close
-    @stream_pool.delete(uuid)
-  end
-
-  def close_stream_async(uuid)
-    Thread.new do
-      if @stream_pool[uuid].closed?
-        @stream_pool.delete(uuid)
-      else
-        close_stream_async(uuid)
-      end
-    end 
+  def accept_data_for_uuid(time, value, err)
+    value => {uuid:, data:}
+    resp = [200, {'content-type' => 'application/json'}, [value.to_json]]
+    @response_pool[uuid] = resp.to_json
+    @response_pool[uuid]
+  rescue Exception => e
+    puts "Something went wrong"
+    puts e.message
+    puts e.backtrace
+    raise e
   end
 
   def pool(uuid)
-    @stream_pool[uuid]
+    @response_pool[uuid]
   end
 end
 
@@ -53,19 +46,15 @@ module Shatter
       if env['PATH_INFO'] == '/callbacks'
         query = env['QUERY_STRING']
         uuid = query.split("=")[1]
-        if StreamPool.instance.pool(uuid).closed_write?
-          stream = StreamPool.instance.pool(uuid)
-          StreamPool.instance.close_stream_async(uuid)
-          [200, {'content-type' => 'application/json'}, stream]
-        else
-          [200, {"delay" => "100", "location" => "/callbacks?uuid=#{uuid}"}, []]
+        response = ResponsePool.instance.pool(uuid)
+        unless response.nil?
+          return JSON.parse(response)
         end
+        [200, {"delay" => "50", "location" => "/callbacks?uuid=#{uuid}"}, []]
       else
         uuid = SecureRandom.uuid
-        Thread.new do
-          StreamPool.instance.add_to_pool(StringIO.new, uuid)
-        end
-        [200, {"delay" => "100", "location" => "/callbacks?uuid=#{uuid}"}, []]
+        ResponsePool.instance.add_to_pool(uuid)
+        [200, {"delay" => "15", "location" => "/callbacks?uuid=#{uuid}"}, []]
       end
     end
   end
