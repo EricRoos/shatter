@@ -3,57 +3,8 @@ require 'json'
 require 'concurrent-ruby'
 require 'pg'
 
-class App
-  include Concurrent::Async
-  def route(uuid, path, query_string)
-    if(path == '/line_items')
-      query_line_items(uuid)
-    else
-      missing_operation(uuid)
-    end
-  end
-
-  def query_line_items(uuid)
-    conn = PG.connect( "postgresql://postgres:mysecretpassword@localhost/microcal_development")
-    res = conn.async_exec("SELECT * from line_items")
-    {data: res.to_a, uuid:, error: nil}
-  end
-
-  def missing_operation(uuid)
-    {data: nil, uuid:, error: :missing_operation}
-  end
-end
-
-class ResponsePool
-  include Singleton
-  def initialize
-    @response_pool = {}
-  end
-
-  def add_to_pool(uuid=nil, path, query_string)
-    uuid ||= SecureRandom.uuid
-    @response_pool[uuid] = nil
-    future = App.new.async.route(uuid, path, query_string)
-    future.add_observer(self, :accept_data_for_uuid)
-    uuid
-  end
-
-  def accept_data_for_uuid(time, value, err)
-    value => {uuid:, data:}
-    resp = [200, {'content-type' => 'application/json'}, [value.to_json]]
-    @response_pool[uuid] = resp.to_json
-    @response_pool[uuid]
-  rescue Exception => e
-    puts "Something went wrong"
-    puts e.message
-    puts e.backtrace
-    raise e
-  end
-
-  def pool(uuid)
-    @response_pool[uuid]
-  end
-end
+require_relative './example_app'
+require_relative './response_pool'
 
 module Shatter
   class Server
