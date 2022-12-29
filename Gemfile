@@ -15,3 +15,5 @@ gem "rack", "~> 3.0"
 gem "rackup", "~> 0.2.3"
 
 gem "concurrent-ruby", "~> 1.1"
+
+gem "pg", "~> 1.4"
