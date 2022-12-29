@@ -1,9 +1,6 @@
 require 'securerandom'
 require 'json'
-require 'concurrent-ruby'
-require 'pg'
 
-require_relative './example_app'
 require_relative './response_pool'
 
 module Shatter
