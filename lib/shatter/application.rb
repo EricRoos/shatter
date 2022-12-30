@@ -14,9 +14,10 @@ module Shatter
 
     def route(uuid, path, query_string)
       if(path == '/line_items')
-        query_line_items.merge(uuid:)
+        data = @app_server.query_line_items(uuid)
+        {data:, error: nil, uuid: }
       else
-        missing_operation.merge(uuid:)
+        {data: nil, error: :missing_operation, uuid: }
       end
     rescue Exception => e
       puts e.message
@@ -24,13 +25,5 @@ module Shatter
       raise e
     end
 
-    def query_line_items
-      data = @app_server.query_line_items
-      {data:, error: nil}
-    end
-
-    def missing_operation
-      {data: nil, error: :missing_operation}
-    end
   end
 end

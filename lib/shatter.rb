@@ -2,6 +2,10 @@
 
 require_relative "shatter/version"
 require_relative "shatter/server"
+require_relative "shatter/service"
+require_relative "shatter/examples/service"
+
+$stdout.sync = true
 
 module Shatter
   class Error < StandardError; end
