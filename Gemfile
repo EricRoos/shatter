@@ -17,3 +17,6 @@ gem "rackup", "~> 0.2.3"
 gem "concurrent-ruby", "~> 1.1"
 
 gem "pg", "~> 1.4"
+
+gem "zk", "~> 1.10"
+gem "zookeeper"
