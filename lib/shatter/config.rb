@@ -1,8 +1,9 @@
+# frozen_string_literal: true
+
 module Shatter
   class Config
-    @@zookeeper_host = nil
-    def self.zookeeper_host= zookeeper_host
-      @@zookeeper_host = zookeeper_host
+    class << self
+      attr_accessor :zookeeper_host
     end
   end
 end

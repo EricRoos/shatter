@@ -5,4 +5,3 @@ require "bundler/setup"
 require "shatter"
 $stdout.sync = true
 Shatter::Service.init(Shatter::Examples::Service)
-
