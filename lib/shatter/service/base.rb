@@ -24,7 +24,7 @@ module Shatter
       end
 
       def self.response_for(uuid)
-        Shatter::ResponsePool.instance.pool[uuid]
+        ResponsePool.instance.pool[uuid]
       end
 
       def self.respond_to_missing?(method)
