@@ -10,6 +10,7 @@ module Shatter
   module Service
     class Base
       include Concurrent::Async
+
       class ZooKeeperConnection
         include Singleton
         attr_reader :client
@@ -32,11 +33,10 @@ module Shatter
       end
 
       def self.method_missing(method, *args, &)
-        uuid = args[0] # first arg should ALWAYS be uuid
+        uuid = args[0].uuid #expect one arg, an instance of FunctionParams
         return {error: 'missing uuid'} if uuid.nil?
         my_ip = ENV["HOST_NAME"] || "localhost"
         host = "#{my_ip}:#{ENV['SHATTER_SERVICE_PORT']}"
-        puts "[#{Time.now}][#{self}][#{uuid}] - #{method}"
         future = @service_class.new.async.send(method, *args, &)
         future.add_observer(self, :populate_pool_with_result)
         zk = ZooKeeperConnection.instance.client
@@ -46,7 +46,10 @@ module Shatter
         my_ip
       end
 
-      def self.populate_pool_with_result(time, value, result)
+      def self.populate_pool_with_result(time, value, err)
+        if err
+          puts err
+        end
         ResponsePool.instance.pool[value[:uuid]] = value[:result]
       end
 
