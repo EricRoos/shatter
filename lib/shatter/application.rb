@@ -27,8 +27,11 @@ module Shatter
 
     def route(uuid, path, _query_string)
       # load balancer druby url
-      druby_ingress_url = "druby://localhost:8787"
-      app_server_client = DRbObject.new_with_uri(druby_ingress_url)
+      druby_ingress_url = nil
+      ZK.open(Shatter::Config.zookeeper_host) do |zk|
+        druby_ingress_url = zk.children("/shater_service_instances").sample
+      end
+      app_server_client = DRbObject.new_with_uri("druby://#{druby_ingress_url}")
       if path == "/line_items"
         data = app_server_client.query_line_items(uuid)
         { data:, error: nil, uuid: }

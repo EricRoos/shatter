@@ -1,5 +1,8 @@
 # frozen_string_literal: true
 
+
+
+require 'benchmark'
 require "drb/drb"
 require "zk"
 require "concurrent-ruby"
@@ -31,14 +34,15 @@ module Shatter
         key = Util.zookeeper_response_key(uuid)
         zk.create(key, my_ip)
       end
-      @service_class.new.async.send(method, *args, &)
+      puts "[#{Time.now}][#{self}][#{uuid}] - #{method}"
+      future = @service_class.new.async.send(method, *args, &)
       my_ip
     end
 
     def self.init
       @service_class = Shatter::Examples::Service
       puts "Initing DRb service"
-      uri = "localhost:8787"
+      uri = "localhost:#{ENV["SHATTER_SERVICE_PORT"]}"
       ZK.open(Config.zookeeper_host) do |zk|
         unless zk.exists?("/shater_service_instances/#{uri}")
           zk.create("/shater_service_instances/#{uri}")
