@@ -9,12 +9,27 @@ module Shatter
 
     def initialize
       DRb.start_service
-      @app_server = DRbObject.new_with_uri("druby://localhost:8787")
+      #client side of drb
+    end
+
+    def response_for(uuid)
+      #instance that holds the data we need
+      druby_instance_url = nil
+      ZK.open('localhost:2181') do |zk|
+        key = "/shatter::response_data_locations/#{uuid}"
+        druby_instance_url = zk.get(key)[0]
+      end
+      app_server_client = DRbObject.new_with_uri(druby_instance_url)
+      data = app_server_client.response_for(uuid)
+      {data:, error: nil, uuid: }
     end
 
     def route(uuid, path, query_string)
+      # load balancer druby url
+      druby_ingress_url = "druby://localhost:8787"
+      app_server_client = DRbObject.new_with_uri(druby_ingress_url)
       if(path == '/line_items')
-        data = @app_server.query_line_items(uuid)
+        data = app_server_client.query_line_items(uuid)
         {data:, error: nil, uuid: }
       else
         {data: nil, error: :missing_operation, uuid: }
