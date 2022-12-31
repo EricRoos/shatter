@@ -15,7 +15,7 @@ module Shatter
     def response_for(uuid)
       #instance that holds the data we need
       druby_instance_url = nil
-      ZK.open('localhost:2181') do |zk|
+      ZK.open(Config.zookeeper_host) do |zk|
         key = Util.zookeeper_response_key(uuid)
         if zk.exists?(key)
           druby_instance_url = zk.get(key)[0]
@@ -39,10 +39,6 @@ module Shatter
       else
         {data: nil, error: :missing_operation, uuid: }
       end
-    rescue Exception => e
-      puts e.message
-      puts e.backtrace
-      raise e
     end
 
   end

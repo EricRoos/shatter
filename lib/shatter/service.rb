@@ -19,16 +19,10 @@ module Shatter
 
       uuid = args[0] # first arg should ALWAYS be uuid
       my_ip = ENV['HOST_NAME'] || "druby://localhost:8787"
-      zk = ZK.new('localhost:2181')
-      begin
+      ZK.open(Config.zookeeper_host) do |zk|
         key = Util.zookeeper_response_key(uuid)
         zk.create(key, my_ip)
-      rescue Exception => e
-        puts e.message
-        puts e.backtrace
-        raise e
       end
-      zk.close
       @@service_class.new.send(m, *args, &block)
     end
 
