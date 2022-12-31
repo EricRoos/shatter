@@ -3,7 +3,7 @@
 require_relative "shatter/version"
 require_relative "shatter/application"
 require_relative "shatter/config"
-require_relative "shatter/server"
+require_relative "shatter/web/server"
 require_relative "shatter/service"
 require_relative "shatter/response_pool"
 require_relative "shatter/util"
