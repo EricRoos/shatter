@@ -10,11 +10,11 @@ module Shatter
     include Concurrent::Async
 
     def initialize
-      DRb.start_service
       # client side of drb
     end
 
     def response_for(uuid)
+      raise 'cant produce response without uuid' if uuid.nil?
       # instance that holds the data we need
       druby_instance_url = instance_url_for(uuid)
       data = nil
@@ -26,14 +26,16 @@ module Shatter
     end
 
     def route(uuid, path, _query_string)
+      raise 'Cant route without uuid' if uuid.nil?
       # load balancer druby url
       druby_ingress_url = nil
-      ZK.open(Shatter::Config.zookeeper_host) do |zk|
-        druby_ingress_url = zk.children("/shater_service_instances").sample
-      end
+      zk = ZK.new (Shatter::Config.zookeeper_host)
+      druby_ingress_url = zk.children("/shater_service_instances").sample
+      zk.close
       app_server_client = DRbObject.new_with_uri("druby://#{druby_ingress_url}")
       if path == "/line_items"
         data = app_server_client.query_line_items(uuid)
+        app_server_client.close
         { data:, error: nil, uuid: }
       else
         { data: nil, error: :missing_operation, uuid: }
