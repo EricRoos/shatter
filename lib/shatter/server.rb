@@ -10,15 +10,13 @@ module Shatter
       query_string = env['QUERY_STRING']
       if env['PATH_INFO'] == '/callbacks'
         uuid = query_string.split("=")[1]
-        response = ResponsePool.instance.pool(uuid)
-        unless response.nil?
-          return JSON.parse(response)
-        end
-        [200, {"delay" => "50", "location" => "/callbacks?uuid=#{uuid}"}, []]
+        response = Application.new.response_for(uuid)
+        return [200, {}, [response.to_json]] unless response.nil?
+        [200, {"delay" => "2000", "location" => "/callbacks?uuid=#{uuid}"}, []]
       else
         uuid = SecureRandom.uuid
-        ResponsePool.instance.add_to_pool(uuid, path, query_string)
-        [200, {"delay" => "15", "location" => "/callbacks?uuid=#{uuid}"}, []]
+        Application.new.async.route(uuid, path, query_string)
+        [200, {"delay" => "100", "location" => "/callbacks?uuid=#{uuid}"}, []]
       end
     end
   end
