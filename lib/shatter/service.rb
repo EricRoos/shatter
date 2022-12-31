@@ -19,14 +19,11 @@ module Shatter
 
     class << self
       attr_reader :service_class
-    end
-
-    class << self
       attr_writer :service_class
     end
 
-    def self.response_for(_uuid)
-      { "result:": {} }
+    def self.response_for(uuid)
+      Shatter::ResponsePool.instance.pool[uuid]
     end
 
     def self.respond_to_missing?(method)
@@ -36,20 +33,27 @@ module Shatter
     def self.method_missing(method, *args, &)
       uuid = args[0] # first arg should ALWAYS be uuid
       return {error: 'missing uuid'} if uuid.nil?
-      my_ip = ENV["HOST_NAME"] || "druby://localhost:8787"
+      my_ip = ENV["HOST_NAME"] || "localhost"
+      host = "#{my_ip}:#{ENV['SHATTER_SERVICE_PORT']}"
+      puts "[#{Time.now}][#{self}][#{uuid}] - #{method}"
+      future = @service_class.new.async.send(method, *args, &)
+      future.add_observer(self, :populate_pool_with_result)
       zk = ZooKeeperConnection.instance.client
       key = nil
       key = Util.zookeeper_response_key(uuid)
-      zk.create(key, my_ip)
-      puts "[#{Time.now}][#{self}][#{uuid}] - #{method}"
-      future = @service_class.new.async.send(method, *args, &)
+      zk.create(key, host)
       my_ip
+    end
+
+    def self.populate_pool_with_result(time, value, result)
+      ResponsePool.instance.pool[value[:uuid]] = value[:result]
     end
 
     def self.init
       @service_class = Shatter::Examples::Service
       puts "Initing DRb service"
       uri = "localhost:#{ENV["SHATTER_SERVICE_PORT"]}"
+      puts "Logging my existnce at #{uri} to zookeeper"
       zk = ZooKeeperConnection.instance.client
       unless zk.exists?("/shater_service_instances/#{uri}")
         zk.create("/shater_service_instances/#{uri}")

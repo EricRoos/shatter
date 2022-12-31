@@ -18,7 +18,7 @@ module Shatter
         uuid = SecureRandom.uuid
         future = Application.new.async.route(uuid, path, query_string)
         #future.add_observer(self, :server_call_result)
-        [200, { "delay" => "100", "location" => "/callbacks?uuid=#{uuid}" }, []]
+        [200, { "delay" => "300", "location" => "/callbacks?uuid=#{uuid}" }, []]
       end
     end
 
@@ -30,7 +30,7 @@ module Shatter
       response = Application.new.response_for(uuid)
       return [200, {}, [response.to_json]] unless response.nil?
 
-      [200, { "delay" => "100", "location" => "/callbacks?uuid=#{uuid}" }, []]
+      [200, { "delay" => "300", "location" => "/callbacks?uuid=#{uuid}" }, []]
     end
   end
 end

@@ -22,7 +22,7 @@ module Shatter
         app_server_client = DRbObject.new_with_uri(druby_instance_url)
         data = app_server_client.response_for(uuid)
       end
-      { data:, error: nil, uuid: }
+      { data:, error: nil, uuid: } if !data.nil?
     end
 
     def route(uuid, path, _query_string)
@@ -50,7 +50,7 @@ module Shatter
       key = Util.zookeeper_response_key(uuid)
       druby_instance_url = zk.get(key)[0] if zk.exists?(key)
       zk.close
-      druby_instance_url
+      "druby://#{druby_instance_url}"
     end
   end
 end
