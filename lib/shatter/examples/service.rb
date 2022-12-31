@@ -12,7 +12,7 @@ module Shatter
         conn = PG.connect("postgresql://postgres:mysecretpassword@localhost/microcal_development")
         sql = "SELECT * from line_items"
         puts "[#{Time.now}][#{self.class}][#{uuid}]#{sql}"
-        conn.async_exec(sql).to_a
+        { result: conn.async_exec(sql).to_a, uuid: }
       end
     end
   end
