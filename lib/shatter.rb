@@ -1,6 +1,8 @@
 # frozen_string_literal: true
 
 require_relative "shatter/version"
+require_relative "shatter/application"
+require_relative "shatter/config"
 require_relative "shatter/server"
 require_relative "shatter/service"
 require_relative "shatter/util"

@@ -2,6 +2,7 @@
 
 require "drb/drb"
 require "zk"
+require "concurrent-ruby"
 
 # Server Side of the drb
 module Shatter
@@ -30,14 +31,21 @@ module Shatter
         key = Util.zookeeper_response_key(uuid)
         zk.create(key, my_ip)
       end
-      @service_class.new.send(method, *args, &)
+      @service_class.new.async.send(method, *args, &)
+      my_ip
     end
 
     def self.init
       @service_class = Shatter::Examples::Service
+      puts "Initing DRb service"
+      uri = "localhost:8787"
+      ZK.open(Config.zookeeper_host) do |zk|
+        unless zk.exists?("/shater_service_instances/#{uri}")
+          zk.create("/shater_service_instances/#{uri}")
+        end
+      end
       puts "Starting DRb service"
-      uri = "druby://localhost:8787"
-      DRb.start_service(uri, self)
+      DRb.start_service("druby://#{uri}", self)
       DRb.thread.join
     end
   end

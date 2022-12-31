@@ -3,8 +3,6 @@
 require "securerandom"
 require "json"
 
-require_relative "./response_pool"
-
 module Shatter
   class Server
     def self.call(env)
@@ -15,9 +13,14 @@ module Shatter
         response_for(uuid)
       else
         uuid = SecureRandom.uuid
-        Application.new.async.route(uuid, path, query_string)
+        future = Application.new.async.route(uuid, path, query_string)
+        future.add_observer(self, :server_call_result)
         [200, { "delay" => "100", "location" => "/callbacks?uuid=#{uuid}" }, []]
       end
+    end
+
+    def self.server_call_result(time, value, error)
+      puts "[#{time}] #{ error.nil? ? value : error }"
     end
 
     def self.response_for(uuid)

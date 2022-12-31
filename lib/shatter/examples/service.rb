@@ -1,9 +1,11 @@
 # frozen_string_literal: true
 
 require "pg"
+require "concurrent-ruby"
 module Shatter
   module Examples
     class Service
+      include Concurrent::Async
       # TODO: Add Method Allow List for Security
 
       def query_line_items(uuid)

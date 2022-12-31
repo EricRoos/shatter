@@ -41,7 +41,7 @@ module Shatter
 
     def instance_url_for(uuid)
       druby_instance_url = nil
-      ZK.open(Config.zookeeper_host) do |zk|
+      ZK.open(Shatter::Config.zookeeper_host) do |zk|
         key = Util.zookeeper_response_key(uuid)
         druby_instance_url = zk.get(key)[0] if zk.exists?(key)
       end
