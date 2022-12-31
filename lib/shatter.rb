@@ -3,6 +3,7 @@
 require_relative "shatter/version"
 require_relative "shatter/server"
 require_relative "shatter/service"
+require_relative "shatter/util"
 require_relative "shatter/examples/service"
 
 $stdout.sync = true

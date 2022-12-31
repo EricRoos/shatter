@@ -16,7 +16,7 @@ module Shatter
       #instance that holds the data we need
       druby_instance_url = nil
       ZK.open('localhost:2181') do |zk|
-        key = "/shatter::response_data_locations/#{uuid}"
+        key = Util.zookeeper_response_key(uuid)
         if zk.exists?(key)
           druby_instance_url = zk.get(key)[0]
         end

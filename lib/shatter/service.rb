@@ -21,7 +21,8 @@ module Shatter
       my_ip = ENV['HOST_NAME'] || "druby://localhost:8787"
       zk = ZK.new('localhost:2181')
       begin
-        zk.create("/shatter::response_data_locations/#{uuid}", my_ip)
+        key = Util.zookeeper_response_key(uuid)
+        zk.create(key, my_ip)
       rescue Exception => e
         puts e.message
         puts e.backtrace
