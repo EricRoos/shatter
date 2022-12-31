@@ -17,10 +17,15 @@ module Shatter
       druby_instance_url = nil
       ZK.open('localhost:2181') do |zk|
         key = "/shatter::response_data_locations/#{uuid}"
-        druby_instance_url = zk.get(key)[0]
+        if zk.exists?(key)
+          druby_instance_url = zk.get(key)[0]
+        end
       end
-      app_server_client = DRbObject.new_with_uri(druby_instance_url)
-      data = app_server_client.response_for(uuid)
+      data = nil
+      if druby_instance_url
+        app_server_client = DRbObject.new_with_uri(druby_instance_url)
+        data = app_server_client.response_for(uuid)
+      end
       {data:, error: nil, uuid: }
     end
 
