@@ -22,7 +22,7 @@ module Shatter
 
       def self.server_call_result(time, value, error)
         return if error.nil?
-        puts "[#{time}][ERROR] #{ error }"
+        Shatter.logger.error "#{ error }"
       end
 
       def self.response_for(uuid)

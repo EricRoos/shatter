@@ -15,5 +15,8 @@ $stdout.sync = true
 
 module Shatter
   class Error < StandardError; end
+  def self.logger
+    Util::Logger.instance
+  end
   # Your code goes here...
 end

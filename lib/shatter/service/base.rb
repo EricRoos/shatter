@@ -33,7 +33,6 @@ module Shatter
       end
 
       def self.method_missing(method, *args, &)
-        puts "Running #{method} with args #{args}"
         uuid = args[0].uuid
         return {error: 'missing uuid'} if uuid.nil?
         my_ip = ENV["HOST_NAME"] || "localhost"
@@ -49,29 +48,31 @@ module Shatter
 
       def self.populate_pool_with_result(time, value, err)
         if err
-          puts err
+          Shatter.logger.info err
         end
         ResponsePool.instance.pool[value[:uuid]] = value[:result]
       end
       def self.close
-        puts "Closing down DRb service"
+        logger = Shatter.logger
+        logger.info "Closing down DRb service"
         uri = "localhost:#{ENV["SHATTER_SERVICE_PORT"]}"
-        puts "Removing my existnce at #{uri} to zookeeper"
+        logger.info "Removing my existnce at #{uri} to zookeeper"
         zk = ZooKeeperConnection.instance.client
         if zk.exists?("/shater_service_instances/#{uri}")
           zk.delete("/shater_service_instances/#{uri}")
         end
-        puts "Closed DRb service"
+        logger.info "Closed DRb service"
       end
       def self.init
-        puts "Initing DRb service"
+        logger = Shatter.logger
+        logger.info "Initing DRb service"
         uri = "localhost:#{ENV["SHATTER_SERVICE_PORT"]}"
-        puts "Logging my existnce at #{uri} to zookeeper"
+        logger.info "Logging my existnce at #{uri} to zookeeper"
         zk = ZooKeeperConnection.instance.client
         unless zk.exists?("/shater_service_instances/#{uri}")
           zk.create("/shater_service_instances/#{uri}")
         end
-        puts "Starting DRb service"
+        logger.info "Starting DRb service"
         DRb.start_service("druby://#{uri}", self)
         DRb.thread.join
       end

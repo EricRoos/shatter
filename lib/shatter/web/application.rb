@@ -25,7 +25,7 @@ module Shatter
         operation = path.scan(/\/(.+)$/).first&.first
         return nil if operation.nil?
         function = Shatter::Examples::ServiceDefinition.function_collection[operation]
-        puts "routing #{params.merge(uuid:)}"
+        Shatter.logger.info "routing #{params.merge(uuid:)}"
         operation_params = Object.const_get("#{function.to_s}::Params").new(**params.merge(uuid:))
         app_server_client.send(operation.to_sym, operation_params)
       end
