@@ -21,14 +21,13 @@ module Shatter
         { data:, error: nil, uuid: } if !data.nil?
       end
 
-      def route(uuid, path, _query_string)
-        puts "Routing #{path} for #{uuid}"
+      def route(uuid, path, params)
         operation = path.scan(/\/(.+)$/).first&.first
-        puts "Sending #{operation} to the services"
         return nil if operation.nil?
-        Shatter::Examples::ServiceDefinition.function_collection[operation]
-        Object.const_get("#{Shatter::Examples::QueryLineItemFunction.to_s}::Params")
-        app_server_client.send(operation.to_sym,Shatter::Examples::QueryLineItemFunction::Params.new(uuid:))
+        function = Shatter::Examples::ServiceDefinition.function_collection[operation]
+        puts "routing #{params.merge(uuid:)}"
+        operation_params = Object.const_get("#{function.to_s}::Params").new(**params.merge(uuid:))
+        app_server_client.send(operation.to_sym, operation_params)
       end
 
       private

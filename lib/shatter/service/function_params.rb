@@ -1,9 +1,9 @@
 module Shatter
   module Service
     class FunctionParams
-      attr_accessor :uuid
-      def initialize(uuid:)
-        @uuid = uuid
+      def self.generate(*args)
+        args << :uuid
+        Data.define(*args)
       end
     end
   end

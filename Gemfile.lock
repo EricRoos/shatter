@@ -1,3 +1,9 @@
+GIT
+  remote: https://github.com/EricRoos/zookeeper.git
+  revision: e024228fc1c3c22cd3b0854ff15ad0d53a98c4ae
+  specs:
+    zookeeper (1.5.4)
+
 PATH
   remote: .
   specs:
@@ -56,7 +62,6 @@ GEM
     webrick (1.7.0)
     zk (1.10.0)
       zookeeper (~> 1.5.0)
-    zookeeper (1.5.3)
 
 PLATFORMS
   x86_64-linux
@@ -73,7 +78,7 @@ DEPENDENCIES
   rubocop-rspec
   shatter!
   zk (~> 1.10)
-  zookeeper
+  zookeeper (~> 1.5.4)!
 
 BUNDLED WITH
    2.4.1
