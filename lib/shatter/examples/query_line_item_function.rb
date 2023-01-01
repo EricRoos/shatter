@@ -5,8 +5,7 @@ require "shatter/service/function_params"
 module Shatter
   module Examples
     class QueryLineItemFunction < Shatter::Service::Function
-      class Params < Shatter::Service::FunctionParams
-      end
+      Params = Shatter::Service::FunctionParams.generate
 
       def call
         uuid = params.uuid
