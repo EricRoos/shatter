@@ -9,10 +9,11 @@ module Shatter
 
       def call
         uuid = params.uuid
-        conn = PG.connect("postgresql://postgres:mysecretpassword@localhost/microcal_development")
-        sql = "SELECT * from line_items"
-        Shatter.logger.info("#{sql}")
-        { result: conn.async_exec(sql).to_a, uuid: }
+        #conn = PG.connect("postgresql://postgres:mysecretpassword@localhost/microcal_development")
+        #sql = "SELECT * from line_items"
+        #Shatter.logger.info("#{sql}")
+        #{ result: conn.async_exec(sql).to_a, uuid: }
+        { result: [], uuid: }
       end
     end
   end
