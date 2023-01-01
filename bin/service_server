@@ -6,4 +6,10 @@ require "shatter"
 $stdout.sync = true
 Shatter::Service::Base.service_definition = Shatter::Examples::ServiceDefinition
 Shatter::Config.zookeeper_host = "localhost:2181"
-Shatter::Service::Base.init
+begin
+  Shatter::Service::Base.init
+rescue Interrupt => e
+  Shatter::Service::Base.close
+rescue SignalException => e
+  Shatter::Service::Base.close
+end

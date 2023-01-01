@@ -53,7 +53,16 @@ module Shatter
         end
         ResponsePool.instance.pool[value[:uuid]] = value[:result]
       end
-
+      def self.close
+        puts "Closing down DRb service"
+        uri = "localhost:#{ENV["SHATTER_SERVICE_PORT"]}"
+        puts "Removing my existnce at #{uri} to zookeeper"
+        zk = ZooKeeperConnection.instance.client
+        if zk.exists?("/shater_service_instances/#{uri}")
+          zk.delete("/shater_service_instances/#{uri}")
+        end
+        puts "Closed DRb service"
+      end
       def self.init
         puts "Initing DRb service"
         uri = "localhost:#{ENV["SHATTER_SERVICE_PORT"]}"

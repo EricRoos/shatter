@@ -16,13 +16,13 @@ module Shatter
         else
           uuid = SecureRandom.uuid
           future = Shatter::Examples::Application.new.route(uuid, path, params)
-          #future.add_observer(self, :server_call_result)
           [200, { "delay" => "100", "location" => "/callbacks?uuid=#{uuid}" }, []]
         end
       end
 
       def self.server_call_result(time, value, error)
-        puts "[#{time}] #{ error.nil? ? value : error }"
+        return if error.nil?
+        puts "[#{time}][ERROR] #{ error }"
       end
 
       def self.response_for(uuid)
