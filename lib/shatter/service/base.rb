@@ -52,29 +52,28 @@ module Shatter
         end
         ResponsePool.instance.pool[value[:uuid]] = value[:result]
       end
+
       def self.close
         logger = Shatter.logger
         logger.info "Closing down DRb service"
         uri = "localhost:#{ENV["SHATTER_SERVICE_PORT"]}"
         logger.info "Removing my existnce at #{uri} to zookeeper"
-        zk = ZooKeeperConnection.instance.client
-        if zk.exists?("/shater_service_instances/#{uri}")
-          zk.delete("/shater_service_instances/#{uri}")
-        end
+        Shatter::Service::Discovery.deregister_service(uri)
         logger.info "Closed DRb service"
       end
+
       def self.init
-        logger = Shatter.logger
         logger.info "Initing DRb service"
         uri = "localhost:#{ENV["SHATTER_SERVICE_PORT"]}"
         logger.info "Logging my existnce at #{uri} to zookeeper"
-        zk = ZooKeeperConnection.instance.client
-        unless zk.exists?("/shater_service_instances/#{uri}")
-          zk.create("/shater_service_instances/#{uri}")
-        end
+        Shatter::Service::Discovery.register_service(uri)
         logger.info "Starting DRb service"
         DRb.start_service("druby://#{uri}", self)
         DRb.thread.join
+      end
+
+      def self.logger
+        Shatter.logger
       end
     end
   end

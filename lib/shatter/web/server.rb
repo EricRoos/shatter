@@ -8,12 +8,12 @@ module Shatter
     class Server
       def self.call(env)
         request = Rack::Request.new(env)
-        params = JSON.parse(request.body.read, {symbolize_names: true})
         path = env["PATH_INFO"]
         if env["PATH_INFO"] == "/callbacks"
-          uuid = query_string.split("=")[1]
+          uuid = env['QUERY_STRING'].split("=")[1]
           response_for(uuid)
         else
+          params = JSON.parse(request.body.read, {symbolize_names: true})
           uuid = SecureRandom.uuid
           future = Shatter::Examples::Application.new.route(uuid, path, params)
           [200, { "delay" => "100", "location" => "/callbacks?uuid=#{uuid}" }, []]

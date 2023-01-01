@@ -11,46 +11,24 @@ module Shatter
       include Concurrent::Async
 
       def response_for(uuid)
-        raise 'cant produce response without uuid' if uuid.nil?
-        druby_instance_url = instance_url_for(uuid)
-        data = nil
-        if druby_instance_url
-          app_server_client = DRbObject.new_with_uri(druby_instance_url)
-          data = app_server_client.response_for(uuid)
-        end
-        { data:, error: nil, uuid: } if !data.nil?
+        druby_instance_url = Shatter::Service::Discovery.service_instance_url_for_uuid(uuid)
+        data = DRbObject.new_with_uri("druby://#{druby_instance_url}").response_for(uuid) if druby_instance_url
+        { data:, error: nil, uuid: }
       end
 
       def route(uuid, path, params)
         operation = path.scan(/\/(.+)$/).first&.first
         return nil if operation.nil?
         function = Shatter::Examples::ServiceDefinition.function_collection[operation]
-        Shatter.logger.info "routing #{params.merge(uuid:)}"
-        operation_params = Object.const_get("#{function.to_s}::Params").new(**params.merge(uuid:))
-        app_server_client.send(operation.to_sym, operation_params)
+        func_params = Object.const_get("#{function.to_s}::Params").new(**params.merge(uuid:))
+        Shatter.logger.info "routing #{path}/#{func_params}"
+        DRbObject.new_with_uri("druby://#{Shatter::Service::Discovery.service_instance_url}")
+          .send(
+            operation.to_sym,
+            func_params
+          )
       end
 
-      private
-
-      def app_server_client
-        return @app_server_client unless @app_server_client.nil?
-        druby_ingress_url = nil
-        zk = ZK.new (Shatter::Config.zookeeper_host)
-        druby_ingress_url = zk.children("/shater_service_instances").sample
-        raise 'couldnt find a server to reach for service' if druby_ingress_url.nil?
-        zk.close
-        @app_server_client = DRbObject.new_with_uri("druby://#{druby_ingress_url}")
-      end
-
-      def instance_url_for(uuid)
-        druby_instance_url = nil
-        zk = ZK.new(Shatter::Config.zookeeper_host)
-        key = Util.zookeeper_response_key(uuid)
-        druby_instance_url = zk.get(key)[0] if zk.exists?(key)
-        zk.close
-        return nil if druby_instance_url.nil?
-        "druby://#{druby_instance_url}"
-      end
     end
   end
 end
