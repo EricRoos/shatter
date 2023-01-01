@@ -4,6 +4,6 @@
 require "bundler/setup"
 require "shatter"
 $stdout.sync = true
-Shatter::Service::Base.service_class = Shatter::Examples::Service
+Shatter::Service::Base.service_definition = Shatter::Examples::ServiceDefinition
 Shatter::Config.zookeeper_host = "localhost:2181"
 Shatter::Service::Base.init

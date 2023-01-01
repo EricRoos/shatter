@@ -9,8 +9,8 @@ module Shatter
         attr_reader :function_collection
       end
       def self.register_function(identifier, function)
-        @function_collection ||= Set.new
-        @function_collection.add(identifier.to_s)
+        @function_collection ||= {}
+        @function_collection[identifier.to_s] = function
         define_method identifier do |params|
           function.new(params).call
         end

@@ -22,7 +22,13 @@ module Shatter
       end
 
       def route(uuid, path, _query_string)
-        raise 'Cannot route from base web application'
+        puts "Routing #{path} for #{uuid}"
+        operation = path.scan(/\/(.+)$/).first&.first
+        puts "Sending #{operation} to the services"
+        return nil if operation.nil?
+        Shatter::Examples::ServiceDefinition.function_collection[operation]
+        Object.const_get("#{Shatter::Examples::QueryLineItemFunction.to_s}::Params")
+        app_server_client.send(operation.to_sym,Shatter::Examples::QueryLineItemFunction::Params.new(uuid:))
       end
 
       private

@@ -20,8 +20,8 @@ module Shatter
       end
 
       class << self
-        attr_reader :service_class
-        attr_writer :service_class
+        attr_reader :service_definition
+        attr_writer :service_definition
       end
 
       def self.response_for(uuid)
@@ -29,15 +29,16 @@ module Shatter
       end
 
       def self.respond_to_missing?(method)
-        @service_class.instance_methods.include?(method.to_sym)
+        @service_definition.instance_methods.include?(method.to_sym)
       end
 
       def self.method_missing(method, *args, &)
-        uuid = args[0].uuid #expect one arg, an instance of FunctionParams
+        puts "Running #{method} with args #{args}"
+        uuid = args[0].uuid
         return {error: 'missing uuid'} if uuid.nil?
         my_ip = ENV["HOST_NAME"] || "localhost"
         host = "#{my_ip}:#{ENV['SHATTER_SERVICE_PORT']}"
-        future = @service_class.new.async.send(method, *args, &)
+        future = @service_definition.new.async.send(method, *args, &)
         future.add_observer(self, :populate_pool_with_result)
         zk = ZooKeeperConnection.instance.client
         key = nil
@@ -54,7 +55,6 @@ module Shatter
       end
 
       def self.init
-        @service_class = Shatter::Examples::Service
         puts "Initing DRb service"
         uri = "localhost:#{ENV["SHATTER_SERVICE_PORT"]}"
         puts "Logging my existnce at #{uri} to zookeeper"
