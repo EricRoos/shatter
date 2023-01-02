@@ -22,3 +22,5 @@ gem "pg", "~> 1.4"
 
 gem "zk", "~> 1.10"
 gem "zookeeper", "~>1.5.4", github: 'EricRoos/zookeeper'
+
+gem "puma", "~> 6.0"

@@ -18,7 +18,7 @@ module Shatter
           params = JSON.parse(request.body.read, {symbolize_names: true})
           uuid = SecureRandom.uuid
           future = Shatter::Examples::Application.new.async.route(uuid, path, params)
-          [200, { "delay" => "0", "location" => "/callbacks?uuid=#{uuid}" }, []]
+          [200, { "delay" => "50", "location" => "/callbacks?uuid=#{uuid}" }, []]
         end
       end
 

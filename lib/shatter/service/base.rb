@@ -35,15 +35,8 @@ module Shatter
       def self.method_missing(method, *args, &)
         uuid = args[0].uuid
         return {error: 'missing uuid'} if uuid.nil?
-        my_ip = ENV["HOST_NAME"] || "localhost"
-        host = "#{my_ip}:#{ENV['SHATTER_SERVICE_PORT']}"
         future = @service_definition.new.async.send(method, *args, &)
         future.add_observer(self, :populate_pool_with_result)
-        zk = ZooKeeperConnection.instance.client
-        key = nil
-        key = Util.zookeeper_response_key(uuid)
-        zk.create(key, host)
-        my_ip
       end
 
       def self.populate_pool_with_result(time, value, err)
@@ -51,6 +44,16 @@ module Shatter
           Shatter.logger.info err
         end
         ResponsePool.instance.pool[value[:uuid]] = value[:result]
+        zk = ZooKeeperConnection.instance.client
+        key = nil
+        key = Util.zookeeper_response_key(value[:uuid])
+        my_ip = ENV["HOST_NAME"] || "localhost"
+        host = "#{my_ip}:#{ENV['SHATTER_SERVICE_PORT']}"
+        zk.create(key, host)
+        my_ip
+      rescue Exception => e
+        Shatter.logger.error e
+        raise e
       end
 
       def self.close

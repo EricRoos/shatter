@@ -27,10 +27,10 @@ module Shatter
         def service_instance_url_for_uuid(uuid)
           druby_instance_url = nil
           key = Util.zookeeper_response_key(uuid)
-
           zk = ZK.new(Shatter::Config.zookeeper_host)
           druby_instance_url = zk.get(key)[0] if zk.exists?(key)
           zk.close
+          Shatter.logger.debug "Service instance url for #{uuid} - #{druby_instance_url}"
 
           druby_instance_url
         end

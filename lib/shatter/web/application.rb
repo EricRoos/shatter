@@ -12,7 +12,8 @@ module Shatter
 
       def response_for(uuid)
         druby_instance_url = Shatter::Service::Discovery.service_instance_url_for_uuid(uuid)
-        data = DRbObject.new_with_uri("druby://#{druby_instance_url}").response_for(uuid) if druby_instance_url
+        return unless druby_instance_url
+        data = DRbObject.new_with_uri("druby://#{druby_instance_url}").response_for(uuid)
         { data:, error: nil, uuid: }
       end
 
