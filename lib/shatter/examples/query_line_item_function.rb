@@ -7,7 +7,7 @@ module Shatter
     class QueryLineItemFunction < Shatter::Service::Function
       Params = Shatter::Service::FunctionParams.generate
 
-      def call
+      def invoke
         uuid = params.uuid
         conn = PG.connect("postgresql://postgres:mysecretpassword@localhost/microcal_development")
         sql = "SELECT * from line_items"

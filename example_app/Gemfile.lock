@@ -1,0 +1,16 @@
+PATH
+  remote: ..
+  specs:
+    shatter (0.1.0)
+
+GEM
+  specs:
+
+PLATFORMS
+  x86_64-linux
+
+DEPENDENCIES
+  shatter!
+
+BUNDLED WITH
+   2.4.1
