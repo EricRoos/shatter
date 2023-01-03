@@ -1,3 +1,13 @@
 #!/usr/bin/env ruby
 require 'shatter'
-puts "new"
+require 'thor'
+class ShatterCLI < Thor
+  desc "new APP_NAME", "scaffold a new shatter app"
+  def new(app_name)
+    puts "Generating new Shatter APP - #{app_name}"
+
+    puts "Adding foreman"
+    `cp #{__dir__}/../templates/Gemfile . && bundle install`
+  end
+end
+ShatterCLI.start(ARGV)
