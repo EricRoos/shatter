@@ -5,11 +5,14 @@ require "shatter/service/function_params"
 module MyApp
   module Functions
     class HelloWorldFunction < Shatter::Service::Function
-      Params = Shatter::Service::FunctionParams.generate(:name)
+
+      define_param :name, nullable: false, type: 'string'
+      define_param :number, nullable: false, type: 'integer'
+
 
       def invoke
-        params.to_h => name:, uuid:
-        { result: "Hello #{name}", uuid:, error: nil, uuid: }
+        params.to_h => name:, number:
+        { result: "Hello #{name}, your number is #{number || 'unknown'}.", error: nil, }
       end
     end
   end

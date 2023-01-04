@@ -27,7 +27,7 @@ module Shatter
             .set_static_result_for(uuid, {result: nil, error: :unknown_operation})
         else
           begin
-            func_params = Object.const_get("#{function.to_s}::Params").new(**params.merge(uuid:))
+            func_params = params.merge(uuid:)
             Shatter.logger.info "routing #{path}/#{func_params}"
             DRbObject.new_with_uri("druby://#{Shatter::Service::Discovery.service_instance_url}")
               .send(
