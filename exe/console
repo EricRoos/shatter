@@ -6,11 +6,7 @@ require "shatter"
 $stdout.sync = true
 
 require_relative "../config/environment"
+require_relative "../application"
 
-begin
-  Shatter::Service::Base.init
-rescue Interrupt => e
-  Shatter::Service::Base.close
-rescue SignalException => e
-  Shatter::Service::Base.close
-end
+require 'irb'
+IRB.start(__FILE__)

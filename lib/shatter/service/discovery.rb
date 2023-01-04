@@ -5,23 +5,32 @@ module Shatter
 
         def deregister_service(service_url)
           zk = ZK.new (Shatter::Config.zookeeper_host)
-          unless zk.exists?("/shater_service_instances/#{service_url}")
+          if zk.exists?("/shater_service_instances/#{service_url}")
             zk.delete("/shater_service_instances/#{service_url}")
           end
+          zk.close
         end
 
         def register_service(service_url)
+          Shatter.logger.info "Registering #{service_url} to zookeeper"
           zk = ZK.new (Shatter::Config.zookeeper_host)
           unless zk.exists?("/shater_service_instances/#{service_url}")
-            zk.create("/shater_service_instances/#{service_url}")
+            created = zk.create("/shater_service_instances/#{service_url}")
+            Shatter.logger.info "Registered #{created}"
           end
+          puts zk.children("/shater_service_instances")
+          zk.close
         end
 
         def service_instance_url
+          service_instance_urls.sample
+        end
+
+        def service_instance_urls
           zk = ZK.new (Shatter::Config.zookeeper_host)
-          url = zk.children("/shater_service_instances").sample
+          urls = zk.children("/shater_service_instances")
           zk.close
-          url
+          urls
         end
 
         def service_instance_url_for_uuid(uuid)

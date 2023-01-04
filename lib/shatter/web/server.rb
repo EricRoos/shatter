@@ -6,6 +6,12 @@ require "json"
 module Shatter
   module Web
     class Server
+
+      class << self
+        attr_reader :application
+        attr_writer :application
+      end
+
       def self.call(env)
         request = Rack::Request.new(env)
         path = env["PATH_INFO"]
@@ -17,8 +23,9 @@ module Shatter
         else
           params = JSON.parse(request.body.read, {symbolize_names: true})
           uuid = SecureRandom.uuid
-          future = Shatter::Examples::Application.new.async.route(uuid, path, params)
-          [200, { "delay" => "50", "location" => "/callbacks?uuid=#{uuid}" }, []]
+          future = application.new.async.route(uuid, path, params)
+          future.add_observer(:server_call_result, self)
+          [200, { "delay" => "20", "location" => "/callbacks?uuid=#{uuid}" }, []]
         end
       end
 
@@ -28,7 +35,7 @@ module Shatter
       end
 
       def self.response_for(uuid)
-        response = Shatter::Examples::Application.new.response_for(uuid)
+        response = application.new.response_for(uuid)
         return [200, {}, [response.to_json]] unless response.nil?
 
         [200, { "delay" => "100", "location" => "/callbacks?uuid=#{uuid}" }, []]

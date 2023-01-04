@@ -9,6 +9,7 @@ module Shatter
         attr_reader :function_collection
       end
       def self.register_function(identifier, function)
+        Shatter.logger.info "Registering function - #{identifier} for #{self}"
         @function_collection ||= {}
         @function_collection[identifier.to_s] = function
         define_method identifier do |params|

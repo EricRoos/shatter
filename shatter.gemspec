@@ -40,6 +40,7 @@ Gem::Specification.new do |spec|
   spec.add_dependency "zk", "~> 1.10"
   spec.add_dependency "puma", "~> 6.0"
   spec.add_dependency "thor", "~> 1.2.1"
+  spec.add_dependency "erb", "~> 2.2.0"
   # spec.add_dependency "zookeeper", "~>1.5.4", github: 'EricRoos/zookeeper'
 
   spec.add_development_dependency "rake", "~> 13.0"

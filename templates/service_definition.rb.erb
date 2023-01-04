@@ -1,0 +1,9 @@
+# frozen_string_literal: true
+
+require_relative './functions/hello_world_function'
+
+module <%= app_name %>
+  class ServiceDefinition < Shatter::Service::ServiceDefinition
+    register_function :hello_world, <%= app_name %>::Functions::HelloWorldFunction
+  end
+end

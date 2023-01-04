@@ -9,8 +9,6 @@ require_relative "shatter/service/discovery"
 require_relative "shatter/service/service_definition"
 require_relative "shatter/service/response_pool"
 require_relative "shatter/util"
-require_relative "shatter/examples/service_definition"
-require_relative "shatter/examples/application"
 
 $stdout.sync = true
 

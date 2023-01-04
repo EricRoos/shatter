@@ -15,8 +15,7 @@ module Shatter
       end
 
       def call
-        
-        self.invoke
+        {result: nil, error:nil}.merge(self.invoke.merge(uuid: params.uuid))
       end
 
       def self.invoke

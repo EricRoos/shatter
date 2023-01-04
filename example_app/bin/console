@@ -1,0 +1,11 @@
+#!/usr/bin/env ruby
+
+require "bundler/setup"
+require "shatter"
+$stdout.sync = true
+
+require_relative "../config/environment"
+require_relative "../application"
+
+require 'irb'
+IRB.start(__FILE__)
