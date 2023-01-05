@@ -7,7 +7,7 @@ GIT
 PATH
   remote: .
   specs:
-    shatter (0.1.0)
+    shatter (0.0.1)
       concurrent-ruby (~> 1.1)
       erb (~> 2.2.0)
       pg (~> 1.4)
