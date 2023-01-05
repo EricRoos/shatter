@@ -7,7 +7,7 @@ GIT
 PATH
   remote: .
   specs:
-    shatter (0.0.1)
+    shatter-rb (0.0.1)
       concurrent-ruby (~> 1.1)
       erb (~> 2.2.0)
       pg (~> 1.4)
@@ -87,7 +87,7 @@ DEPENDENCIES
   rubocop (~> 1.21)
   rubocop-rake
   rubocop-rspec
-  shatter!
+  shatter-rb!
   zookeeper (~> 1.5.4)!
 
 BUNDLED WITH
