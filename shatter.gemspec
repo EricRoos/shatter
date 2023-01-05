@@ -8,9 +8,8 @@ Gem::Specification.new do |spec|
   spec.authors = ["Eric Roos"]
   spec.email = ["ericroos@hey.com"]
 
-  spec.summary = "Write a short summary, because RubyGems requires one."
-  spec.description = "Write a longer description or delete this line."
-  spec.homepage = "https://rubygems.org/gems/shatter"
+  spec.summary = "An async first RPC web app server for Ruby"
+  spec.homepage = "https://rubygems.org/gems/shatter-rb"
   spec.license = "MIT"
   spec.required_ruby_version = ">= 3.1.0"
 
@@ -34,9 +33,7 @@ Gem::Specification.new do |spec|
   # Uncomment to register a new dependency of your gem
   # spec.add_dependency "example-gem", "~> 1.0"
   spec.add_dependency "rack", "~> 3.0"
-  spec.add_dependency "rackup", "~> 0.2.3"
   spec.add_dependency "concurrent-ruby", "~> 1.1"
-  spec.add_dependency "pg", "~> 1.4"
   spec.add_dependency "zk", "~> 1.10"
   spec.add_dependency "puma", "~> 6.0"
   spec.add_dependency "thor", "~> 1.2.1"
@@ -46,8 +43,8 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency "rake", "~> 13.0"
   spec.add_development_dependency "rspec", "~> 3.0"
   spec.add_development_dependency "rubocop", "~> 1.21"
-  spec.add_development_dependency "rubocop-rake"
-  spec.add_development_dependency "rubocop-rspec"
+  spec.add_development_dependency "rubocop-rake", "~> 0.6.0"
+  spec.add_development_dependency "rubocop-rspec", "~> 2.16.0"
   # For more information and examples about making a new gem, check out our
   # guide at: https://bundler.io/guides/creating_gem.html
   #spec.metadata["rubygems_mfa_required"] = "true"
