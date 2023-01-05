@@ -3,7 +3,7 @@
 require_relative "lib/shatter/version"
 
 Gem::Specification.new do |spec|
-  spec.name = "shatter"
+  spec.name = "shatter-rb"
   spec.version = Shatter::VERSION
   spec.authors = ["Eric Roos"]
   spec.email = ["ericroos@hey.com"]
