@@ -11,7 +11,7 @@ Gem::Specification.new do |spec|
   spec.summary = "An async first RPC web app server for Ruby"
   spec.homepage = "https://rubygems.org/gems/shatter-rb"
   spec.license = "MIT"
-  spec.required_ruby_version = "~> 3.1.0"
+  spec.required_ruby_version = ">= 3.1.0"
 
   # spec.metadata["allowed_push_host"] = "TODO: Set to your gem server 'https://example.com'"
 
