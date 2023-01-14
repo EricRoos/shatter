@@ -9,6 +9,7 @@
 
 # rspec failure tracking
 .rspec_status
+node_modules/*
 example_app/node_modules/*
 javascript/node_modules/*
 *.gem
