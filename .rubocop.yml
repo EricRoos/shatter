@@ -5,7 +5,8 @@ AllCops:
   NewCops: enable
   TargetRubyVersion: 3.1
   Exclude:
-    - './exe/**/*'
+    - vendor/bundle/**/*
+    - exe/**/*
     - Guardfile
 
 Style/StringLiterals:
