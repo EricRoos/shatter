@@ -5,6 +5,18 @@ require_relative "./shatter/config"
 module Shatter
   class Error < StandardError; end
 
+  def self.root
+    current = Dir.pwd
+    root_dir = nil
+
+    while current.size >= 1 && root_dir.nil?
+      root_dir = current if Dir.children(current).include?("Gemfile")
+      current = File.expand_path("..", current) if root_dir.nil?
+      Dir.new(current)
+    end
+    root_dir
+  end
+
   def self.logger
     Util::Logger.instance
   end
@@ -17,6 +29,10 @@ module Shatter
 
   def self.loader
     loader
+  end
+
+  def self.load_environment
+    require "#{Shatter.root}/config/environment"
   end
 
   def self.load
