@@ -12,10 +12,18 @@ module Shatter
       end
     end
 
+    def self.instances_key
+      "/shater_service_instances"
+    end
+
+    def self.zookeeper_response_key_root
+      "/shatter::response_data_locations"
+    end
+
     def self.zookeeper_response_key(uuid)
       raise "Cant produce key without uuid" if uuid.nil?
 
-      "/shatter::response_data_locations/#{uuid}"
+      "#{zookeeper_response_key_root}/#{uuid}"
     end
   end
 end
