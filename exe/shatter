@@ -5,6 +5,7 @@ require "shatter"
 require "thor"
 require "erb"
 require "fileutils"
+require 'zk'
 $stdout.sync = true
 
 def safe_makedir(path)
@@ -14,10 +15,17 @@ end
 class ShatterCLI < Thor
   desc "init_service_discovery", "Sets up required keys for service discovery to work properly"
 
+  desc "init_service_discovery", "creates necessary keys in zookeeper"
   def init_service_discovery
+    Shatter.load_environment
     zk = ZK.new(Shatter::Config.zookeeper_host)
-    zk.create("/shater_service_instances")
-    zk.create("/shatter::response_data_locations")
+    [ 
+      Shatter::Util.instances_key,
+      Shatter::Util.zookeeper_response_key_root,
+    ].each do |key|
+      next if zk.exists?(key)
+      zk.create(key)
+    end
     zk.close
   end
 
