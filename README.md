@@ -41,14 +41,13 @@ bundle exec shatter new <AppName>
 For now, app name should be in provided in UpperCamelCase.
 
 
-Open the console with `bin/console` and run:
+Init zookeeper with the required keys needed
 ```ruby
-ZK.new (Shatter::Config.zookeeper_host)
-zk.create("/shater_service_instances")
-zk.create("/shatter::response_data_locations")
-zk.close
+bundle exec shatter init_service_discovery
 ```
-Start the services with
+
+
+Finally, you start shatter by running both the web server and service applications.
 
 ```bash
 bin/service
