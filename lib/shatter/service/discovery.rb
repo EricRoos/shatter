@@ -11,17 +11,17 @@ module Shatter
 
         def deregister_service(service_url)
           zk = connection_pool.checkout
-          if zk.exists?("/shater_service_instances/#{service_url}")
-            zk.delete("/shater_service_instances/#{service_url}")
-          end
+          key = Shatter::Util.instances_key
+          zk.delete("#{key}/#{service_url}") if zk.exists?("#{key}/#{service_url}")
           connection_pool.checkin(zk)
         end
 
         def register_service(service_url)
           Shatter.logger.info "Registering #{service_url} to zookeeper"
           zk = connection_pool.checkout
-          unless zk.exists?("/shater_service_instances/#{service_url}")
-            created = zk.create("/shater_service_instances/#{service_url}")
+          key = Shatter::Util.instances_key
+          unless zk.exists?("#{key}/#{service_url}")
+            created = zk.create("#{key}/#{service_url}")
             Shatter.logger.info "Registered #{created}"
           end
           connection_pool.checkin(zk)
@@ -33,7 +33,7 @@ module Shatter
 
         def service_instance_urls
           zk = connection_pool.checkout
-          urls = zk.children("/shater_service_instances")
+          urls = zk.children(Shatter::Util.instances_key)
           connection_pool.checkin(zk)
           urls
         end
