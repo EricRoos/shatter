@@ -7,6 +7,17 @@ require "concurrent-ruby"
 module Shatter
   module Service
     class Base
+      class ReloadWrapper
+        def self.method_missing(method, *args, &)
+          Shatter::RELOAD_RW_LOCK.with_write_lock do
+            Shatter.reload
+          end
+          Shatter::RELOAD_RW_LOCK.with_read_lock do
+            Shatter::Service::Base.send(method, *args)
+          end
+        end
+      end
+
       include Concurrent::Async
 
       class << self
@@ -62,7 +73,7 @@ module Shatter
         logger.info "Logging my existnce at #{uri} to zookeeper"
         Shatter::Service::Discovery.register_service(uri)
         logger.info "Starting DRb service"
-        @service_instance = DRb.start_service("druby://#{uri}", self)
+        @service_instance = DRb.start_service("druby://#{uri}", Shatter::Config.reload_classes ? ReloadWrapper : self)
         logger.info "DRb service started"
         DRb.thread.join
       end

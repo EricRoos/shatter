@@ -1,7 +1,14 @@
 # frozen_string_literal: true
 
 require "zeitwerk"
+require "concurrent/atomic/read_write_lock"
+Dir["#{__dir__}/shatter/service/*.rb"].each { |file| require file }
+Dir["#{__dir__}/shatter/web/*.rb"].each { |file| require file }
+Dir["#{__dir__}/shatter/ext/*.rb"].each { |file| require file }
 require_relative "./shatter/config"
+require_relative "./shatter/util"
+require_relative "./shatter/version"
+
 module Shatter
   class Error < StandardError; end
 
@@ -28,20 +35,35 @@ module Shatter
   end
 
   def self.loader
-    loader
+    @loader
   end
 
   def self.load_environment
-    require "#{Shatter.root}/config/environment"
+    require "#{Shatter.root}/config/environment.rb"
+  end
+
+  def self.reload
+    @loader.reload
+    link_definitions
   end
 
   def self.load
-    loader = Zeitwerk::Loader.for_gem
+    # @loader = Zeitwerk::Loader.for_gem
+    @loader = Zeitwerk::Loader.new
+    @loader.tag = File.basename(__FILE__, ".rb")
+    @loader.inflector = Zeitwerk::GemInflector.new(__FILE__)
     Config.autoload_paths.each do |path|
-      loader.push_dir(File.expand_path(path, Config.root))
+      @loader.push_dir(File.expand_path(path, root))
     end
-    loader.enable_reloading
-    loader.setup # ready!
+    @loader.enable_reloading
+    @loader.setup # ready!
+    link_definitions
+  end
+
+  def self.link_definitions
+    Shatter::Service::Base.service_definition = ServiceDefinition if Object.const_defined?("ServiceDefinition")
+    Shatter::Web::Server.application = Application if Object.const_defined?("Application")
   end
   # Your code goes here...
 end
+Shatter::RELOAD_RW_LOCK = Concurrent::ReadWriteLock.new

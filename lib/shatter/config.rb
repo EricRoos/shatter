@@ -3,7 +3,7 @@
 module Shatter
   class Config
     class << self
-      attr_accessor :zookeeper_host, :service_port, :root
+      attr_accessor :zookeeper_host, :service_port, :root, :reload_classes
       attr_writer :autoload_paths, :initial_delay, :missing_result_delay
 
       def autoload_paths
