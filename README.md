@@ -78,7 +78,37 @@ You can generate your typescript with:
   bundle exec shatter generate_typescript --path web/src/
 ```
 
-Assuming you have setup your javascript based front end at ./web
+Assuming you have setup your javascript based front end at ./web. This will creaate a `Client` class that is defined with all of your functions. Example of whats generated from the sample app.
+
+```
+import { ShatterClient } from 'shatter-client'
+
+interface ShatterResult {
+  result: string | number | Array<any> | object,
+  error: string | null
+  uuid: string
+}
+
+class AppClient {
+  client: ShatterClient;
+
+  constructor(host: string){
+    this.client = new ShatterClient(host)
+  }
+
+  async makeRequest<responseType>(operation : string, params : object) : Promise<responseType> {
+    return await this.client.invokeRPC(operation,params) as responseType;
+  }
+}
+
+class Client extends AppClient {
+  async helloWorld( params : {name: string, number: number}){
+    return this.makeRequest<ShatterResult & {
+      result: any
+    }>('hello_world', params )
+  }
+}
+```
 
 ## Contributing
 
