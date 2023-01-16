@@ -1,0 +1,5 @@
+async <%= function_nm.camel_case_lower %>( params : {<%= meta.map { |k,v| "#{k}#{v[:nullable] ? '?':''}: #{v[:type] == 'integer' ? 'number' : v[:type]}" }.join(", ") %>}){
+    return this.makeRequest<ShatterResult & {
+      result: any
+    }>('<%= function_nm %>', params )
+}
