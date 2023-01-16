@@ -108,6 +108,7 @@ class Client extends AppClient {
     }>('hello_world', params )
   }
 }
+export default Client;
 ```
 
 ## Contributing
