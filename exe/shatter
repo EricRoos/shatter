@@ -6,6 +6,8 @@ require "thor"
 require "erb"
 require "fileutils"
 require 'zk'
+require 'puma/cli'
+
 $stdout.sync = true
 
 def safe_makedir(path)
@@ -29,6 +31,24 @@ class ShatterCLI < Thor
     zk.close
   end
 
+  desc "service", "starts the service layer"
+  def service
+    Shatter.load_environment
+    begin
+      Shatter::Service::Base.init
+    rescue Interrupt => e
+      puts e.message
+      puts e.backtrace
+      Shatter::Service::Base.close
+    end
+  end
+
+  desc "server", "starts the web server layer"
+  def server
+    cli = Puma::CLI.new ["#{Shatter.root}/config.ru"]
+    puts cli.run
+  end
+
   desc "generate_typescript", "generates typescript defs of your service definition"
   option :path
   def generate_typescript
@@ -45,9 +65,9 @@ class ShatterCLI < Thor
     system("bundle install")
 
     puts "Generating scripts"
-    FileUtils.mkdir("./bin", noop: Dir.exist?("./bin"))
-    FileUtils.cp("#{__dir__}/../bin/service", "./bin/service", verbose: true)
-    FileUtils.cp("#{__dir__}/../bin/server", "./bin/server", verbose: true)
+    #FileUtils.mkdir("./bin", noop: Dir.exist?("./bin"))
+    #FileUtils.cp("#{__dir__}/../bin/service", "./bin/service", verbose: true)
+    #FileUtils.cp("#{__dir__}/../bin/server", "./bin/server", verbose: true)
 
     puts "Generating boilerplate"
 
