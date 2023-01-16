@@ -46,8 +46,8 @@ bundle exec shatter init_service_discovery
 Finally, you start shatter by running both the web server and service applications.
 
 ```bash
-bin/service
-bin/server
+bundle exec shatter server
+bundle exec shatter service
 ```
 
 Congrats! Shatter is up and running!
