@@ -7,10 +7,6 @@ An async first RPC app server built in Ruby. Supported by DRb, Puma, and Zookeep
 </p>
 
 
-## Why
-
-Small apps are very common and RPC is a great simple alternative to REST, GraphQL, SOAP, and others. Shatter allows you to very simply, without too much opinion, define your business functions and invoke them with a premade HTTP endpoint. 
-
 ## Whats needed
 
 * Ruby3.1 and later
