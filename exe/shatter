@@ -29,6 +29,13 @@ class ShatterCLI < Thor
     zk.close
   end
 
+  desc "generate_typescript", "generates typescript defs of your service definition"
+  option :path
+  def generate_typescript
+    Shatter.load_environment
+    File.open("#{Shatter.root}/#{options[:path]}/Client.ts", "w") { |f| f.write(ServiceDefinition.to_typescript) }
+  end
+
   desc "new APP_NAME", "scaffold a new shatter app"
   def new(app_name)
     puts "Generating new Shatter APP - #{app_name}"

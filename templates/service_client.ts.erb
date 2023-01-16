@@ -1,0 +1,25 @@
+import { ShatterClient } from 'shatter-client'
+
+interface ShatterResult {
+  result: string | number | Array<any> | object,
+  error: string | null
+  uuid: string
+}
+
+class AppClient {
+  client: ShatterClient;
+
+  constructor(host: string){
+    this.client = new ShatterClient(host)
+  }
+
+  async makeRequest<responseType>(operation : string, params : object) : Promise<responseType> {
+    return await this.client.invokeRPC(operation,params) as responseType;
+  }
+}
+
+class Client extends AppClient {
+  <%= function_defs.map(&:to_typescript).join("\n") %>
+}
+
+export default Client;

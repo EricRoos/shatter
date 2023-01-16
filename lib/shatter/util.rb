@@ -3,6 +3,12 @@
 require "logger"
 require "singleton"
 
+class String
+  def camel_case_lower
+    split("_").inject([]) { |buffer, e| buffer.push(buffer.empty? ? e : e.capitalize) }.join
+  end
+end
+
 module Shatter
   module Util
     class Logger < ::Logger

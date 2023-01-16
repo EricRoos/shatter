@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require "erb"
+
 module Shatter
   module Service
     class Function
@@ -55,6 +57,13 @@ module Shatter
 
       def self.invoke
         raise "cant invoke for base function"
+      end
+
+      def self.to_typescript
+        function_nm = Shatter::Service::Base.service_definition.function_collection.to_a.detect do |fn_def|
+                        fn_def[1] == self
+                      end[0]
+        ERB.new(File.read("#{__dir__}/../../../templates/function_definition.ts.erb")).result(binding)
       end
     end
   end
