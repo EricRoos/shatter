@@ -72,6 +72,18 @@ https://github.com/EricRoos/shatter/blob/main/javascript/dist/demo.js
 
 
 
+### Front end things
+
+We suggest you use Vite to setup your front end. Shatter comes with the ability to export your functions to a typescript definition that will give you a configured out of the box client ready for use. No need for wiring yourself except for importing whats generated.
+
+You can generate your typescript with:
+
+```
+  bundle exec shatter generate_typescript --path web/src/
+```
+
+Assuming you have setup your javascript based front end at ./web
+
 ## Contributing
 
 Bug reports and pull requests are welcome on GitHub at https://github.com/[USERNAME]/shatter. This project is intended to be a safe, welcoming space for collaboration, and contributors are expected to adhere to the [code of conduct](https://github.com/[USERNAME]/shatter/blob/master/CODE_OF_CONDUCT.md).
